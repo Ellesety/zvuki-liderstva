@@ -24,13 +24,13 @@ const STORIES = [
     year: "70 г. н. э.",                          // CHANGE THIS TEXT
     bg: "#1a1210", glow: "rgba(200,90,30,.30)",
     image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/%28Venice%29_La_distruzione_del_tempio_di_Gerusalemme_-Francesco_Hayez_-_gallerie_Accademia_Venice.jpg/960px-%28Venice%29_La_distruzione_del_tempio_di_Gerusalemme_-Francesco_Hayez_-_gallerie_Accademia_Venice.jpg",
-    imageAlt: "Разрушение Иерусалимского храма. Картина Франческо Айеца (1867); фотография: Didier Descouens, CC BY-SA 4.0.",
+    imageAlt: "Разрушение Иерусалимского храма",
     imageSource: "https://commons.wikimedia.org/wiki/File:%28Venice%29_La_distruzione_del_tempio_di_Gerusalemme_-Francesco_Hayez_-_gallerie_Accademia_Venice.jpg",
     audio: "assets/audio/yohanan.mp3",             // ADD AUDIO FILE HERE
-    audioTitle: "Тихая молитва без инструментов, шёпот изучения текста",
+    audioTitle: "Далёкий город, огонь, шёпот, изучение текста",
     hook: "Представьте, что центр вашей цивилизации разрушен. Что вы будете спасать первым?",
-    context: "После Иудейской войны Иерусалим и Второй Храм были разрушены (70 г. н. э.). Вавилонский Талмуд рассказывает, что рабби Йоханана бен Закая тайно вынесли из осаждённого города в гробу в лагерь Веспасиана. Он предсказал полководцу, что тот станет императором, и попросил пощадить Явне и его мудрецов (Гиттин 56а–б). Позднейшая традиция связывает Явне с новым центром изучения Торы и общинной жизни. Этот рассказ можно прочитать как лидерский выбор: сохранить людей, знание и общую жизнь, когда прежний центр разрушен.",
-    note: "В раввинистической традиции память о Храме связывали с ограничениями на музыку; их объём и применение толковались по-разному. А капелла здесь — звуковое решение проекта, а не утверждение, что все псалмы повсеместно исполнялись только без инструментов.",
+    context: "Во время Иудейской войны Иерусалим и Второй Храм были разрушены (70 г. н. э.). Привычный мир древней Иудеи рухнул. Но рабби Йоханан бен Закай совершает невероятное: под видом покойника его в гробу тайком выносят из осажденного города прямо в римский лагерь к полководцу Веспасиану. Он предсказал тому императорскую власть, за что попросил лишь об одном — пощадить город Явне и его мудрецов. Там бен Заккай создал новый духовный и судебный центр. Бен Закай сделал гениальный лидерский шаг — перенес центр еврейской жизни из разрушенного здания Храма в Книгу, Учение и Молитву. И заменил жертвоприношения \"служением сердца\". В знак глубокого национального траура по утраченному Храму на любые музыкальные инструменты и песнопения был наложен строгий запрет. Все псалмы читались исполнялись без инструментов — а капелла.",
+    note: "",
     dilemma: "Храма больше нет. Общине нужен способ продолжать жить. Что вы делаете?",
     options: [
       { text: "Пытаюсь любой ценой восстановить прежний порядок", quality: "СМЕЛОСТЬ",
@@ -42,8 +42,8 @@ const STORIES = [
     ],
     quality: "АДАПТАЦИЯ",
     qualityText: "Сохранить главное, изменив форму.",
-    verse: "«И мы принесём слова уст наших вместо тельцов»",
-    verseSource: "Осия 14:3",
+    verse: "И мы принесем [слова] уст наших вместо тельцов» (Осия 14:3)",
+    verseSource: "",
     quote: "", quoteSource: ""
   },
   {
@@ -291,9 +291,9 @@ function build() {
       <span class="year">${esc(s.era)} · ${esc(s.year)}</span>
       <h2 class="reveal">${esc(s.leader)}</h2>
       <p class="hook reveal">${esc(s.hook)}</p>
-      <div class="fig reveal"><span>${esc(s.imageAlt)}${s.imageSource ? `<br><a href="${esc(s.imageSource)}" target="_blank" rel="noopener noreferrer">Источник изображения и лицензия</a>` : ""}</span><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div>
+      <div class="fig reveal"><span>${esc(s.imageAlt)}${s.imageSource ? `<br><a href="${esc(s.imageSource)}" target="_blank" rel="noopener noreferrer">Wikimedia Commons — фото Didier Descouens, CC BY-SA 4.0</a>` : ""}</span><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div>
       <p class="reveal">${esc(s.context)}</p>
-      <p class="note reveal">${esc(s.note)}</p>
+      ${s.note ? `<p class="note reveal">${esc(s.note)}</p>` : ""}
       ${s.verse ? `<blockquote class="quote verse reveal">${esc(s.verse)}<br><small>${esc(s.verseSource || "")}</small></blockquote>` : ""}
       <button class="btn reveal listen">▶ СЛУШАТЬ ЭПОХУ</button>
       <div class="player" role="region" aria-label="Аудио: ${esc(s.leader)}">
