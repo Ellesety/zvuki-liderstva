@@ -175,7 +175,8 @@ const Sound = {
     if (p && p.catch) p.catch(e => { if (e && e.name === "NotAllowedError") return; /* browser waits for a click */ });
   },
   fail() {
-    this.title = "Audio file not added yet";
+    // If the ambient is playing, keep showing it in the small player; the message stays inside the story panel
+    this.title = (this.ambStarted && this.ambOk) ? "Тишина" : "Audio file not added yet";
     if (this.status) this.status.textContent = "Audio file not added yet";
     this.ui();
   },
