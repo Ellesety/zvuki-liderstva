@@ -126,12 +126,34 @@ const PROFILES = {
 // ========================================
 const $ = (s, r = document) => r.querySelector(s);
 const el = (t, c, h) => { const e = document.createElement(t); if (c) e.className = c; if (h != null) e.innerHTML = h; return e; };
-const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const esc = s => String(s).replace(/[&<>\"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 // ---- Audio controller ----
 const Sound = {
-  audio: new Audio(), amb: new Audio(), on: true, title: "Тишина", status: null, ambStarted: false, vol: 0.7, ducked: false, fadeT: null,
+  audio: new Audio(), amb: new Audio(), on: true, title: "Тишина", status: null,
+  pauseButton: null, storyReady: false, storyPaused: false,
+  ambStarted: false, vol: 0.7, ducked: false, fadeT: null,
   ambTarget() { return Math.min(1, this.vol * PROJECT.ambientVolume); },
+  updateStoryButton() {
+    if (!this.pauseButton) return;
+    this.pauseButton.disabled = !this.storyReady;
+    this.pauseButton.textContent = this.audio.paused
+      ? "▶ ПРОДОЛЖИТЬ ЗВУК ЭПОХИ"
+      : "⏸ ПАУЗА ЗВУКА ЭПОХИ";
+  },
+  toggleStory() {
+    if (!this.on || !this.storyReady || !this.audio.src || this.audio.ended) return;
+    if (this.audio.paused) {
+      this.storyPaused = false;
+      this.duck(true);
+      this.resume();
+    } else {
+      this.audio.pause();
+      this.storyPaused = true;
+      this.duck(false);
+    }
+    this.updateStoryButton();
+  },
   fadeAmb(to, done) {
     clearInterval(this.fadeT);
     this.fadeT = setInterval(() => {
@@ -140,7 +162,7 @@ const Sound = {
       else this.amb.volume = Math.max(0, Math.min(1, this.amb.volume + Math.sign(d) * 0.03));
     }, 60);
   },
-  // Ambient fades out while an era sound plays, then fades back in when the era sound ends
+  // Ambient fades out while an era sound plays, then fades back in when the era sound ends or is paused
   duck(on) {
     if (on === this.ducked) return;
     this.ducked = on;
@@ -161,23 +183,42 @@ const Sound = {
   setVol(v) { this.vol = v; this.audio.volume = v; if (!this.ducked) { clearInterval(this.fadeT); this.amb.volume = this.ambTarget(); } },
   init() {
     this.audio.loop = false; this.audio.volume = 0.7; // era sounds play once, then the ambient returns
-    this.audio.addEventListener("playing", () => this.duck(true));
-    this.audio.addEventListener("ended", () => this.duck(false));
+    this.audio.addEventListener("playing", () => {
+      this.storyReady = true;
+      this.duck(true);
+      this.updateStoryButton();
+    });
+    this.audio.addEventListener("pause", () => this.updateStoryButton());
+    this.audio.addEventListener("ended", () => {
+      this.storyReady = false;
+      this.duck(false);
+      this.updateStoryButton();
+    });
     this.audio.addEventListener("error", () => this.next());
     $("#soundToggle").onclick = () => this.toggle();
     $("#playPause").onclick = () => {
       const paused = this.audio.paused && (this.amb.paused || !this.amb.src);
-      if (paused) { if (this.audio.src && !this.audio.ended) this.resume(); if (this.amb.src && !this.ducked) this.amb.play().catch(() => {}); }
-      else { this.audio.pause(); this.amb.pause(); }
+      if (paused) {
+        if (this.audio.src && !this.audio.ended && !this.storyPaused) this.resume();
+        if (this.amb.src && !this.ducked) this.amb.play().catch(() => {});
+      } else {
+        this.audio.pause();
+        this.amb.pause();
+      }
       this.ui();
     };
     $("#volume").oninput = e => this.setVol(+e.target.value);
     this.amb.onplay = this.amb.onpause = () => this.ui();
-    this.audio.onplay = this.audio.onpause = () => this.ui();
+    this.audio.onplay = this.audio.onpause = () => { this.ui(); this.updateStoryButton(); };
   },
-  play(src, title, statusEl) {
+  play(src, title, statusEl, pauseButton) {
     this.startAmbient();
-    this.status = statusEl; if (statusEl) statusEl.textContent = "";
+    this.storyPaused = false;
+    this.status = statusEl;
+    this.pauseButton = pauseButton || null;
+    this.storyReady = false;
+    this.updateStoryButton();
+    if (statusEl) statusEl.textContent = "";
     this.title = title;
     // Tries the file you set, then the same name with other extensions (mp3, wav, ogg, m4a)
     const base = src.replace(/\.[^./]+$/, "");
@@ -199,12 +240,17 @@ const Sound = {
     this.title = (this.ambStarted && this.ambOk) ? "Тишина" : "Audio file not added yet";
     this.duck(false);
     if (this.status) this.status.textContent = "Audio file not added yet";
+    this.storyReady = false;
+    this.updateStoryButton();
     this.ui();
   },
   toggle() {
     this.on = !this.on;
     if (!this.on) { this.audio.pause(); this.amb.pause(); }
-    else { if (this.audio.src && !this.audio.ended) this.resume(); if (this.ambStarted && this.amb.src && !this.ducked) this.amb.play().catch(() => {}); }
+    else {
+      if (this.audio.src && !this.audio.ended && !this.storyPaused) this.resume();
+      if (this.ambStarted && this.amb.src && !this.ducked) this.amb.play().catch(() => {});
+    }
     this.ui();
   },
   ui() {
@@ -226,9 +272,15 @@ function build() {
   $(".bigwave").innerHTML = Array.from({ length: 48 }, (_, i) => `<i style="animation-delay:${(i % 12) * .12}s"></i>`).join("");
 
   const nav = $("#eraNav"), tl = $("#timeline");
+  const playStory = (story, section) => {
+    const player = $(".player", section);
+    player.classList.add("open");
+    Sound.play(story.audio, story.audioTitle, $(".status", section), $(".story-pause", section));
+  };
+
   STORIES.forEach((s, i) => {
     const b = el("button", "", esc(s.era)); b.dataset.id = s.id;
-    b.onclick = () => { $("#" + s.id).scrollIntoView(); Sound.play(s.audio, s.audioTitle); };
+    b.onclick = () => { const section = $("#" + s.id); section.scrollIntoView(); playStory(s, section); };
     nav.append(b);
 
     const sec = el("article", "story era"); sec.id = s.id; sec.dataset.era = s.id;
@@ -240,18 +292,23 @@ function build() {
       <p class="reveal">${esc(s.context)}</p>
       <p class="note reveal">${esc(s.note)}</p>
       <button class="btn reveal listen">▶ СЛУШАТЬ ЭПОХУ</button>
-      <div class="player" role="region" aria-label="Аудио: ${esc(s.leader)}"><strong>${esc(s.audioTitle)}</strong><div class="status" aria-live="polite"></div></div>
+      <div class="player" role="region" aria-label="Аудио: ${esc(s.leader)}">
+        <strong>${esc(s.audioTitle)}</strong>
+        <div class="status" aria-live="polite"></div>
+        <button class="btn story-pause" type="button" disabled>⏸ ПАУЗА ЗВУКА ЭПОХИ</button>
+      </div>
       <h3 class="reveal" style="font-weight:400;font-size:1.6rem;margin-top:48px">${esc(s.dilemma)}</h3>
       <p class="reveal" style="color:var(--mut)">Что бы вы сделали?</p>
       <div class="options"></div>
       <div class="result" aria-live="polite"></div>
     </div>`;
     const img = $("img", sec); img.onerror = () => img.remove();
-    $(".listen", sec).onclick = () => { const p = $(".player", sec); p.classList.add("open"); Sound.play(s.audio, s.audioTitle, $(".status", sec)); };
+    $(".listen", sec).onclick = () => playStory(s, sec);
+    $(".story-pause", sec).onclick = () => Sound.toggleStory();
     s.options.forEach(o => {
       const ob = el("button", "opt reveal", esc(o.text));
       ob.onclick = () => {
-        $$(".opt", sec).forEach(x => x.classList.remove("chosen")); ob.classList.add("chosen");
+        $(".opt", sec).forEach(x => x.classList.remove("chosen")); ob.classList.add("chosen");
         const next = STORIES[i + 1];
         const r = $(".result", sec);
         r.innerHTML = `<p><em>Этот выбор показывает один из возможных подходов к лидерству.</em></p>
@@ -262,7 +319,7 @@ function build() {
           <button class="btn primary next">ПЕРЕЙТИ К СЛЕДУЮЩЕЙ ЭПОХЕ →</button>`;
         r.classList.add("open");
         $(".next", r).onclick = () => {
-          if (next) { $("#" + next.id).scrollIntoView(); Sound.play(next.audio, next.audioTitle); }
+          if (next) { const nextSection = $("#" + next.id); nextSection.scrollIntoView(); playStory(next, nextSection); }
           else $("#final").scrollIntoView();
         };
       };
@@ -326,8 +383,6 @@ document.addEventListener("DOMContentLoaded", () => {
   build(); quiz(); observe(); Sound.init(); Sound.ui();
   $("#startBtn").onclick = () => {
     Sound.startAmbient();
-    const s = STORIES[0];
-    $("#" + s.id).scrollIntoView();
-    Sound.play(s.audio, s.audioTitle);
+    $("#timeline").scrollIntoView({ behavior: "smooth" });
   };
 });
