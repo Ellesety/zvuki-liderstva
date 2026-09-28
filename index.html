@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Звуки лидерства</title>
+<meta name="description" content="Интерактивный проект о еврейском лидерстве в истории.">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-era="hero">
+<a class="skip" href="#timeline">К историям</a>
+<div class="grain" aria-hidden="true"></div>
+
+<header class="topbar">
+  <nav id="eraNav" aria-label="Эпохи"></nav>
+  <div class="progress" aria-hidden="true"><i id="progress"></i></div>
+</header>
+
+<div class="sound" role="group" aria-label="Управление звуком">
+  <button id="soundToggle" aria-pressed="true">🔊 SOUND ON</button>
+  <button id="playPause" aria-label="Пауза / продолжить">⏯</button>
+  <input id="volume" type="range" min="0" max="1" step="0.05" value="0.7" aria-label="Громкость">
+  <span class="wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
+  <span id="nowPlaying" aria-live="polite">Тишина</span>
+</div>
+
+<main>
+  <section class="hero" id="hero">
+    <p class="kicker">Интерактивный проект</p>
+    <h1>Звуки<br>лидерства</h1>
+    <p class="lead">Как еврейские лидеры принимали решения в моменты, когда будущее было неизвестно?</p>
+    <div class="hero-actions">
+      <button class="btn primary" id="startBtn">НАЧАТЬ ПУТЕШЕСТВИЕ</button>
+      <span class="hint">Лучше проходить со звуком</span>
+    </div>
+    <div class="bigwave" aria-hidden="true"></div>
+  </section>
+
+  <section id="timeline" aria-label="Истории"></section>
+
+  <section class="final era" id="final" data-era="final">
+    <div class="wrap">
+      <h2>Так что же такое лидерство?</h2>
+      <ul class="qualities" id="qualities"></ul>
+      <p class="lead">Теперь попробуйте определить, какой тип лидерства ближе вам.</p>
+      <div id="quiz" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="about era" id="about">
+    <div class="wrap">
+      <h2>О проекте</h2>
+      <p id="aboutText"></p>
+      <dl id="aboutMeta"></dl>
+    </div>
+  </section>
+
+  <section class="sources era" id="sources">
+    <div class="wrap">
+      <h2>Источники</h2>
+      <ul id="sourceList"></ul>
+    </div>
+  </section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
