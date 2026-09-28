@@ -2,6 +2,10 @@
 // EDITABLE PROJECT CONTENT
 // ========================================
 const PROJECT = {
+  // MAIN AMBIENT SOUND: plays after the user clicks "НАЧАТЬ ПУТЕШЕСТВИЕ", quietly under every story
+  ambient: "assets/audio/ambient.mp3",             // ADD AUDIO FILE HERE
+  ambientTitle: "Главный эмбиент",                  // CHANGE THIS TEXT
+  ambientVolume: 0.5,                               // 0.1 (quiet) ... 1 (as loud as story sounds)
   aboutText: "Этот проект создан как попытка исследовать лидерство через историю, звук и интерактивный storytelling.", // CHANGE THIS TEXT
   meta: {
     "Авторы": "[ADD AUTHOR NAMES]",            // CHANGE THIS TEXT
@@ -126,24 +130,49 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;",
 
 // ---- Audio controller ----
 const Sound = {
-  audio: new Audio(), on: true, title: "Тишина", status: null,
+  audio: new Audio(), amb: new Audio(), on: true, title: "Тишина", status: null, ambStarted: false, vol: 0.7,
+  startAmbient() {
+    if (this.ambStarted) return;
+    this.ambStarted = true;
+    const base = PROJECT.ambient.replace(/\.[^./]+$/, "");
+    const q = [PROJECT.ambient, ...["mp3", "wav", "ogg", "m4a"].map(e => base + "." + e).filter(x => x !== PROJECT.ambient)];
+    const tryNext = () => { if (!q.length) { this.ambOk = false; this.ui(); return; } this.amb.src = q.shift(); if (this.on) { const p = this.amb.play(); if (p && p.catch) p.catch(() => {}); } };
+    this.amb.onerror = tryNext; this.amb.loop = true; this.ambOk = true;
+    this.setVol(this.vol); tryNext(); this.ui();
+  },
+  setVol(v) { this.vol = v; this.audio.volume = v; this.amb.volume = Math.min(1, v * PROJECT.ambientVolume); },
   init() {
     this.audio.loop = true; this.audio.volume = 0.7;
-    this.audio.addEventListener("error", () => this.fail());
+    this.audio.addEventListener("error", () => this.next());
     $("#soundToggle").onclick = () => this.toggle();
-    $("#playPause").onclick = () => { if (!this.audio.src) return; this.audio.paused ? this.resume() : this.audio.pause(); this.ui(); };
-    $("#volume").oninput = e => this.audio.volume = +e.target.value;
+    $("#playPause").onclick = () => {
+      const paused = this.audio.paused && (this.amb.paused || !this.amb.src);
+      if (paused) { if (this.audio.src) this.resume(); if (this.amb.src) this.amb.play().catch(() => {}); }
+      else { this.audio.pause(); this.amb.pause(); }
+      this.ui();
+    };
+    $("#volume").oninput = e => this.setVol(+e.target.value);
+    this.amb.onplay = this.amb.onpause = () => this.ui();
     this.audio.onplay = this.audio.onpause = () => this.ui();
   },
   play(src, title, statusEl) {
+    this.startAmbient();
     this.status = statusEl; if (statusEl) statusEl.textContent = "";
-    this.title = title; this.audio.src = src;
+    this.title = title;
+    // Tries the file you set, then the same name with other extensions (mp3, wav, ogg, m4a)
+    const base = src.replace(/\.[^./]+$/, "");
+    this.queue = [src, ...["mp3", "wav", "ogg", "m4a"].map(e => base + "." + e).filter(x => x !== src)];
+    this.next();
+  },
+  next() {
+    if (!this.queue || !this.queue.length) return this.fail();
+    this.audio.src = this.queue.shift();
     if (!this.on) { this.ui(); return; }
     this.resume();
   },
   resume() {
     const p = this.audio.play();
-    if (p && p.catch) p.catch(() => this.fail());
+    if (p && p.catch) p.catch(e => { if (e && e.name === "NotAllowedError") return; /* browser waits for a click */ });
   },
   fail() {
     this.title = "Audio file not added yet";
@@ -152,16 +181,17 @@ const Sound = {
   },
   toggle() {
     this.on = !this.on;
-    if (!this.on) this.audio.pause(); else if (this.audio.src) this.resume();
+    if (!this.on) { this.audio.pause(); this.amb.pause(); }
+    else { if (this.audio.src) this.resume(); if (this.ambStarted && this.amb.src) this.amb.play().catch(() => {}); }
     this.ui();
   },
   ui() {
-    const playing = !this.audio.paused && this.on && !this.audio.error;
+    const playing = this.on && ((!this.audio.paused && !this.audio.error) || (!this.amb.paused && !this.amb.error));
     document.body.classList.toggle("playing", playing);
     const b = $("#soundToggle");
     b.textContent = this.on ? "🔊 SOUND ON" : "🔇 SOUND OFF";
     b.setAttribute("aria-pressed", this.on);
-    $("#nowPlaying").textContent = this.title;
+    $("#nowPlaying").textContent = (this.title === "Тишина" && this.ambStarted && this.ambOk) ? PROJECT.ambientTitle : this.title;
   }
 };
 
@@ -273,6 +303,7 @@ function observe() {
 document.addEventListener("DOMContentLoaded", () => {
   build(); quiz(); observe(); Sound.init(); Sound.ui();
   $("#startBtn").onclick = () => {
+    Sound.startAmbient();
     const s = STORIES[0];
     $("#" + s.id).scrollIntoView();
     Sound.play(s.audio, s.audioTitle);
