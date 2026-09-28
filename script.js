@@ -23,13 +23,14 @@ const STORIES = [
     leader: "Йоханан бен Закай",
     year: "70 г. н. э.",                          // CHANGE THIS TEXT
     bg: "#1a1210", glow: "rgba(200,90,30,.30)",
-    image: "assets/images/yohanan.jpg",            // ADD IMAGE HERE
-    imageAlt: "Иллюстрация: Иерусалим, 70 г. н. э. [ADD IMAGE + CREDIT]",
+    image: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/00/%28Venice%29_La_distruzione_del_tempio_di_Gerusalemme_-Francesco_Hayez_-_gallerie_Accademia_Venice.jpg/960px-%28Venice%29_La_distruzione_del_tempio_di_Gerusalemme_-Francesco_Hayez_-_gallerie_Accademia_Venice.jpg",
+    imageAlt: "Разрушение Иерусалимского храма. Картина Франческо Айеца (1867); фотография: Didier Descouens, CC BY-SA 4.0.",
+    imageSource: "https://commons.wikimedia.org/wiki/File:%28Venice%29_La_distruzione_del_tempio_di_Gerusalemme_-Francesco_Hayez_-_gallerie_Accademia_Venice.jpg",
     audio: "assets/audio/yohanan.mp3",             // ADD AUDIO FILE HERE
-    audioTitle: "Далёкий город, огонь, шёпот, изучение текста",
+    audioTitle: "Тихая молитва без инструментов, шёпот изучения текста",
     hook: "Представьте, что центр вашей цивилизации разрушен. Что вы будете спасать первым?",
-    context: "Во время Иудейской войны Иерусалим и Второй Храм были разрушены (70 г. н. э.). Традиционный рассказ (Талмуд, Гиттин 56б) связывает Йоханана бен Закая с Явне и центром изучения Торы. [SOURCE NEEDED: проверить детали и формулировки по источнику]",
-    note: "Детали рассказа о встрече с Веспасианом — предание. Проверьте по источнику, прежде чем цитировать.",
+    context: "После Иудейской войны Иерусалим и Второй Храм были разрушены (70 г. н. э.). Вавилонский Талмуд рассказывает, что рабби Йоханана бен Закая тайно вынесли из осаждённого города в гробу в лагерь Веспасиана. Он предсказал полководцу, что тот станет императором, и попросил пощадить Явне и его мудрецов (Гиттин 56а–б). Позднейшая традиция связывает Явне с новым центром изучения Торы и общинной жизни. Этот рассказ можно прочитать как лидерский выбор: сохранить людей, знание и общую жизнь, когда прежний центр разрушен.",
+    note: "В раввинистической традиции память о Храме связывали с ограничениями на музыку; их объём и применение толковались по-разному. А капелла здесь — звуковое решение проекта, а не утверждение, что все псалмы повсеместно исполнялись только без инструментов.",
     dilemma: "Храма больше нет. Общине нужен способ продолжать жить. Что вы делаете?",
     options: [
       { text: "Пытаюсь любой ценой восстановить прежний порядок", quality: "СМЕЛОСТЬ",
@@ -41,7 +42,9 @@ const STORIES = [
     ],
     quality: "АДАПТАЦИЯ",
     qualityText: "Сохранить главное, изменив форму.",
-    quote: "[ADD VERIFIED QUOTE]", quoteSource: "[ADD SOURCE]"
+    verse: "«И мы принесём слова уст наших вместо тельцов»",
+    verseSource: "Осия 14:3",
+    quote: "", quoteSource: ""
   },
   {
     id: "herzl", era: "СИОНИЗМ",
@@ -288,9 +291,10 @@ function build() {
       <span class="year">${esc(s.era)} · ${esc(s.year)}</span>
       <h2 class="reveal">${esc(s.leader)}</h2>
       <p class="hook reveal">${esc(s.hook)}</p>
-      <div class="fig reveal"><span>${esc(s.image)}<br>${esc(s.imageAlt)}</span><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div>
+      <div class="fig reveal"><span>${esc(s.imageAlt)}${s.imageSource ? `<br><a href="${esc(s.imageSource)}" target="_blank" rel="noopener noreferrer">Источник изображения и лицензия</a>` : ""}</span><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div>
       <p class="reveal">${esc(s.context)}</p>
       <p class="note reveal">${esc(s.note)}</p>
+      ${s.verse ? `<blockquote class="quote verse reveal">${esc(s.verse)}<br><small>${esc(s.verseSource || "")}</small></blockquote>` : ""}
       <button class="btn reveal listen">▶ СЛУШАТЬ ЭПОХУ</button>
       <div class="player" role="region" aria-label="Аудио: ${esc(s.leader)}">
         <strong>${esc(s.audioTitle)}</strong>
@@ -315,7 +319,7 @@ function build() {
           <p>${esc(o.explain)}</p>
           <p class="note">Лидерское качество этой эпохи:</p>
           <div class="quality">${esc(s.quality)}</div><p>${esc(s.qualityText)}</p>
-          <blockquote class="quote">${esc(s.quote)}<br><small>${esc(s.quoteSource)}</small></blockquote>
+          ${s.quote ? `<blockquote class="quote">${esc(s.quote)}<br><small>${esc(s.quoteSource)}</small></blockquote>` : ""}
           <button class="btn primary next">ПЕРЕЙТИ К СЛЕДУЮЩЕЙ ЭПОХЕ →</button>`;
         r.classList.add("open");
         $(".next", r).onclick = () => {
