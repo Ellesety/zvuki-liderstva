@@ -130,7 +130,25 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;",
 
 // ---- Audio controller ----
 const Sound = {
-  audio: new Audio(), amb: new Audio(), on: true, title: "Тишина", status: null, ambStarted: false, vol: 0.7,
+  audio: new Audio(), amb: new Audio(), on: true, title: "Тишина", status: null, ambStarted: false, vol: 0.7, ducked: false, fadeT: null,
+  ambTarget() { return Math.min(1, this.vol * PROJECT.ambientVolume); },
+  fadeAmb(to, done) {
+    clearInterval(this.fadeT);
+    this.fadeT = setInterval(() => {
+      const d = to - this.amb.volume;
+      if (Math.abs(d) < 0.03) { this.amb.volume = to; clearInterval(this.fadeT); if (done) done(); }
+      else this.amb.volume = Math.max(0, Math.min(1, this.amb.volume + Math.sign(d) * 0.03));
+    }, 60);
+  },
+  // Ambient fades out while an era sound plays, then fades back in when the era sound ends
+  duck(on) {
+    if (on === this.ducked) return;
+    this.ducked = on;
+    if (on) { this.fadeAmb(0, () => { if (this.ducked) this.amb.pause(); }); return; }
+    if (!this.on || !this.ambStarted || !this.amb.src) return;
+    if (this.amb.paused) { this.amb.volume = 0; const p = this.amb.play(); if (p && p.catch) p.catch(() => {}); }
+    this.fadeAmb(this.ambTarget());
+  },
   startAmbient() {
     if (this.ambStarted) return;
     this.ambStarted = true;
@@ -140,14 +158,16 @@ const Sound = {
     this.amb.onerror = tryNext; this.amb.loop = true; this.ambOk = true;
     this.setVol(this.vol); tryNext(); this.ui();
   },
-  setVol(v) { this.vol = v; this.audio.volume = v; this.amb.volume = Math.min(1, v * PROJECT.ambientVolume); },
+  setVol(v) { this.vol = v; this.audio.volume = v; if (!this.ducked) { clearInterval(this.fadeT); this.amb.volume = this.ambTarget(); } },
   init() {
-    this.audio.loop = true; this.audio.volume = 0.7;
+    this.audio.loop = false; this.audio.volume = 0.7; // era sounds play once, then the ambient returns
+    this.audio.addEventListener("playing", () => this.duck(true));
+    this.audio.addEventListener("ended", () => this.duck(false));
     this.audio.addEventListener("error", () => this.next());
     $("#soundToggle").onclick = () => this.toggle();
     $("#playPause").onclick = () => {
       const paused = this.audio.paused && (this.amb.paused || !this.amb.src);
-      if (paused) { if (this.audio.src) this.resume(); if (this.amb.src) this.amb.play().catch(() => {}); }
+      if (paused) { if (this.audio.src && !this.audio.ended) this.resume(); if (this.amb.src && !this.ducked) this.amb.play().catch(() => {}); }
       else { this.audio.pause(); this.amb.pause(); }
       this.ui();
     };
@@ -177,13 +197,14 @@ const Sound = {
   fail() {
     // If the ambient is playing, keep showing it in the small player; the message stays inside the story panel
     this.title = (this.ambStarted && this.ambOk) ? "Тишина" : "Audio file not added yet";
+    this.duck(false);
     if (this.status) this.status.textContent = "Audio file not added yet";
     this.ui();
   },
   toggle() {
     this.on = !this.on;
     if (!this.on) { this.audio.pause(); this.amb.pause(); }
-    else { if (this.audio.src) this.resume(); if (this.ambStarted && this.amb.src) this.amb.play().catch(() => {}); }
+    else { if (this.audio.src && !this.audio.ended) this.resume(); if (this.ambStarted && this.amb.src && !this.ducked) this.amb.play().catch(() => {}); }
     this.ui();
   },
   ui() {
