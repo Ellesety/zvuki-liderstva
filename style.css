@@ -63,3 +63,5 @@ h2{font-size:clamp(2rem,7vw,4.5rem);line-height:1.05;font-weight:400;margin-bott
 .sources ul{padding-left:20px;color:var(--sand)}
 @media(max-width:600px){body{font-size:17px}.sound{left:10px;right:10px;justify-content:space-between}.story{padding:12vh 0}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none;filter:none}}
+
+#ben-gurion .fig img{object-position:50% 15%!important}
