@@ -47,6 +47,25 @@ const STORIES = [
     quote: "", quoteSource: ""
   },
   {
+    id: "maimonides", era: "СРЕДНЕВЕКОВЬЕ",
+    leader: "Маймонид (Рамбам)",
+    year: "XII век",
+    bg: "#161512", glow: "rgba(180,150,100,.25)",
+    image: "https://w2.chabad.org/media/images/1098/CKvo10982927.jpg?_i=_n504BC99DD0473598AAE3BCDC5D75568D",
+    imageAlt: "Маймонид (Рамбам)",
+    audio: "assets/audio/maimonides/maimonides.mp3",
+    audioTitle: "Песнопение «Адон Олам» (אֲדוֹן עוֹלָם) или «Игдаль» (יִגְדַּל) в традиционном сефардском исполнении. ИЛИ МОЖНО инструментальную обработку старинных сефардских песен («Morenika», «Puncha puncha»).",
+    hook: "",
+    context: "В XII веке евреи подверглись религиозным преследованиям в Испании и вынужденном изгнания. Чтобы соединить разрозненные общины философ и врач Рамбам создает монументальный свод законов «Мишне Тора», а затем и «Наставник колеблющихся», в которых совмещает строгую религию с античной философией.\n\nОн систематизировал всю еврейскую традицию так, что она стала понятна и доступна каждому — от Каира до Йемена.",
+    note: "",
+    dilemma: "",
+    options: [],
+    quality: "",
+    qualityText: "",
+    quote: "Я слышал в Египте от рабби Шмуэля, одного из потомков Рамбама, что, когда Рамбам подписывал письмо, он завершал его униженными словами: «Всякий день нарушающий три заповеди Торы»",
+    quoteSource: "Эстори Пархи (XIV век) — https://www.lechaim.ru/ARHIV/235/levinov.htm#_ftn12"
+  },
+  {
     id: "herzl", era: "СИОНИЗМ",
     leader: "Теодор Герцль",
     year: "1896–1897",
@@ -99,7 +118,7 @@ const STORIES = [
 ];
 
 // Extra timeline eras without a story yet (optional, shown as "скоро")
-const EXTRA_ERAS = ["СРЕДНЕВЕКОВЬЕ", "ХАСИДИЗМ", "СОВРЕМЕННОСТЬ"]; // CHANGE THIS TEXT
+const EXTRA_ERAS = ["ХАСИДИЗМ", "СОВРЕМЕННОСТЬ"]; // CHANGE THIS TEXT
 
 // Quiz: each answer adds a point to a quality. Edit freely.
 const QUIZ = [
@@ -290,19 +309,19 @@ function build() {
     sec.innerHTML = `<div class="wrap">
       <span class="year">${esc(s.era)} · ${esc(s.year)}</span>
       <h2 class="reveal">${esc(s.leader)}</h2>
-      <p class="hook reveal">${esc(s.hook)}</p>
+      ${s.hook ? `<p class="hook reveal">${esc(s.hook)}</p>` : ""}
       <div class="fig reveal"><span>${esc(s.imageAlt)}${s.imageSource ? `<br><a href="${esc(s.imageSource)}" target="_blank" rel="noopener noreferrer">Wikimedia Commons — фото Didier Descouens, CC BY-SA 4.0</a>` : ""}</span><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div>
-      <p class="reveal">${esc(s.context)}</p>
+      ${s.context.split(/\\n\\n+/).map(p => `<p class="reveal">${esc(p)}</p>`).join("")}
       ${s.note ? `<p class="note reveal">${esc(s.note)}</p>` : ""}
       ${s.verse ? `<blockquote class="quote verse reveal">${esc(s.verse)}<br><small>${esc(s.verseSource || "")}</small></blockquote>` : ""}
+      ${s.quote ? `<blockquote class="quote reveal">${esc(s.quote)}<br><small>${esc(s.quoteSource || "")}</small></blockquote>` : ""}
       <button class="btn reveal listen">▶ СЛУШАТЬ ЭПОХУ</button>
       <div class="player" role="region" aria-label="Аудио: ${esc(s.leader)}">
         <strong>${esc(s.audioTitle)}</strong>
         <div class="status" aria-live="polite"></div>
         <button class="btn story-pause" type="button" disabled>⏸ ПАУЗА ЗВУКА ЭПОХИ</button>
       </div>
-      <h3 class="reveal" style="font-weight:400;font-size:1.6rem;margin-top:48px">${esc(s.dilemma)}</h3>
-      <p class="reveal" style="color:var(--mut)">Что бы вы сделали?</p>
+      ${s.dilemma ? `<h3 class="reveal" style="font-weight:400;font-size:1.6rem;margin-top:48px">${esc(s.dilemma)}</h3><p class="reveal" style="color:var(--mut)">Что бы вы сделали?</p>` : ""}
       <div class="options"></div>
       <div class="result" aria-live="polite"></div>
     </div>`;
@@ -319,7 +338,7 @@ function build() {
           <p>${esc(o.explain)}</p>
           <p class="note">Лидерское качество этой эпохи:</p>
           <div class="quality">${esc(s.quality)}</div><p>${esc(s.qualityText)}</p>
-          ${s.quote ? `<blockquote class="quote">${esc(s.quote)}<br><small>${esc(s.quoteSource)}</small></blockquote>` : ""}
+          
           <button class="btn primary next">ПЕРЕЙТИ К СЛЕДУЮЩЕЙ ЭПОХЕ →</button>`;
         r.classList.add("open");
         $(".next", r).onclick = () => {
