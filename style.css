@@ -65,3 +65,5 @@ h2{font-size:clamp(2rem,7vw,4.5rem);line-height:1.05;font-weight:400;margin-bott
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.reveal{opacity:1;transform:none;filter:none}}
 
 #ben-gurion .fig img{object-position:50% 15%!important}
+
+@media(min-width:900px){h1{font-size:clamp(4rem,8vw,9rem);white-space:nowrap;letter-spacing:-.045em}}
