@@ -381,16 +381,29 @@ function observe() {
   }), { threshold: .15 });
   $$(".reveal, .fig").forEach(n => io.observe(n));
 
-  const eio = new IntersectionObserver(es => es.forEach(e => {
-    if (!e.isIntersecting) return;
-    const s = STORIES.find(x => x.id === e.target.id);
-    document.body.dataset.era = e.target.id;
+  const syncActiveEra = () => {
+    const marker = innerHeight / 2;
+    const current = $(".story, .final").find(n => {
+      const r = n.getBoundingClientRect();
+      return r.top <= marker && r.bottom > marker;
+    });
+    const story = current && STORIES.find(x => x.id === current.id);
+    if (current) document.body.dataset.era = current.id;
+    else delete document.body.dataset.era;
     const root = document.documentElement.style;
-    root.setProperty("--bg", s ? s.bg : "#14110f");
-    root.setProperty("--glow", s ? s.glow : "rgba(193,39,45,.25)");
-    $$("#eraNav button").forEach(b => b.classList.toggle("on", b.dataset.id === e.target.id));
-  }), { threshold: .4 });
-  $$(".story, .final").forEach(n => eio.observe(n));
+    root.setProperty("--bg", story ? story.bg : "#14110f");
+    root.setProperty("--glow", story ? story.glow : "rgba(193,39,45,.25)");
+    $("#eraNav button").forEach(b => b.classList.toggle("on", !!current && b.dataset.id === current.id));
+  };
+  let activeEraFrame = false;
+  const queueActiveEraSync = () => {
+    if (activeEraFrame) return;
+    activeEraFrame = true;
+    requestAnimationFrame(() => { activeEraFrame = false; syncActiveEra(); });
+  };
+  addEventListener("scroll", queueActiveEraSync, { passive: true });
+  addEventListener("resize", queueActiveEraSync);
+  syncActiveEra();
 
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   addEventListener("scroll", () => {
