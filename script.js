@@ -383,7 +383,7 @@ function observe() {
 
   const syncActiveEra = () => {
     const marker = innerHeight / 2;
-    const current = $(".story, .final").find(n => {
+    const current = Array.from(document.querySelectorAll(".story, .final")).find(n => {
       const r = n.getBoundingClientRect();
       return r.top <= marker && r.bottom > marker;
     });
@@ -393,7 +393,7 @@ function observe() {
     const root = document.documentElement.style;
     root.setProperty("--bg", story ? story.bg : "#14110f");
     root.setProperty("--glow", story ? story.glow : "rgba(193,39,45,.25)");
-    $("#eraNav button").forEach(b => b.classList.toggle("on", !!current && b.dataset.id === current.id));
+    document.querySelectorAll("#eraNav button").forEach(b => b.classList.toggle("on", !!current && b.dataset.id === current.id));
   };
   let activeEraFrame = false;
   const queueActiveEraSync = () => {
