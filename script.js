@@ -311,7 +311,7 @@ function build() {
       <h2 class="reveal">${esc(s.leader)}</h2>
       ${s.hook ? `<p class="hook reveal">${esc(s.hook)}</p>` : ""}
       <div class="fig reveal"><span>${esc(s.imageAlt)}${s.imageSource ? `<br><a href="${esc(s.imageSource)}" target="_blank" rel="noopener noreferrer">Wikimedia Commons — фото Didier Descouens, CC BY-SA 4.0</a>` : ""}</span><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div>
-      ${s.context.split(/\\n\\n+/).map(p => `<p class="reveal">${esc(p)}</p>`).join("")}
+      ${s.context.split(/\n\n+/).map(p => `<p class="reveal">${esc(p)}</p>`).join("")}
       ${s.note ? `<p class="note reveal">${esc(s.note)}</p>` : ""}
       ${s.verse ? `<blockquote class="quote verse reveal">${esc(s.verse)}<br><small>${esc(s.verseSource || "")}</small></blockquote>` : ""}
       ${s.quote ? `<blockquote class="quote reveal">${esc(s.quote)}<br><small>${esc(s.quoteSource || "")}</small></blockquote>` : ""}
