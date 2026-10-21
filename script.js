@@ -8,10 +8,9 @@ const PROJECT = {
   ambientVolume: 0.5,                               // 0.1 (quiet) ... 1 (as loud as story sounds)
   aboutText: "Этот проект создан как попытка исследовать лидерство через историю, звук и интерактивный storytelling.", // CHANGE THIS TEXT
   meta: {
-    "Авторы": "[ADD AUTHOR NAMES]",            // CHANGE THIS TEXT
-    "Программа": "[ADD PROGRAM NAME]",         // CHANGE THIS TEXT
-    "Дата": "[ADD DATE]",                      // CHANGE THIS TEXT
-    "Ссылки": "[ADD LINKS]"                    // CHANGE THIS TEXT
+    "Авторы": "Лиза Россман и Дмитрий Шнейдерман",
+    "Программа": "MASA JL",
+    "Дата": "2026 год"
   },
   sources: [ "[ADD SOURCE]", "[ADD SOURCE]", "[ADD SOURCE]" ], // books, archives, articles, audio, images
   qualities: ["АДАПТАЦИЯ","ВИДЕНИЕ","СМЕЛОСТЬ","ОТВЕТСТВЕННОСТЬ","СПОСОБНОСТЬ ОБЪЕДИНЯТЬ"]
