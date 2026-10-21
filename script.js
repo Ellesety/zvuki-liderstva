@@ -133,11 +133,30 @@ const STORIES = [
     quality: "ОТВЕТСТВЕННОСТЬ",
     qualityText: "Решать, зная, что цена решения ляжет на других.",
     quote: "В Израиле, чтобы быть реалистом, нужно верить в чудеса", quoteSource: ""
+  },
+  {
+    id: "modernity", era: "СОВРЕМЕННОСТЬ",
+    leader: "Лидерство горизонтальных связей",
+    year: "XXI век",
+    bg: "#141719", glow: "rgba(100,150,170,.27)",
+    image: "https://ichef.bbci.co.uk/ace/ws/640/cpsprodpb/6596/production/_128960062_mediaitem128960061.jpg.webp",
+    imageAlt: "Современность",
+    audio: "assets/audio/modernity/modernity.mp3",
+    audioTitle: "Музыка современности",
+    hook: "",
+    context: "В XXI веке (особенно во время глобальных вызовов, кризисов и военных испытаний) проявился уникальный феномен: лидерство перестало быть монополией государства или конкретных фигур. Тысячи молодых людей, IT-специалистов, волонтеров и предпринимателей организуют взаимовыручку, логистику, технологические инициативы и гуманитарные хабы за считанные часы. Это лидерство горизонтальных связей, мобильности и взаимовыручки.",
+    note: "",
+    dilemma: "",
+    options: [],
+    quality: "",
+    qualityText: "",
+    quote: "Ам Исраэль Хай» (Народ Израиля жив)",
+    quoteSource: ""
   }
 ];
 
 // Extra timeline eras without a story yet (optional, shown as "скоро")
-const EXTRA_ERAS = ["СОВРЕМЕННОСТЬ"]; // CHANGE THIS TEXT
+const EXTRA_ERAS = []; // CHANGE THIS TEXT
 
 // Quiz: each answer adds a point to a quality. Edit freely.
 const QUIZ = [
