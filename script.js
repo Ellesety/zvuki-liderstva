@@ -12,7 +12,6 @@ const PROJECT = {
     "Программа": "MASA JL",
     "Дата": "2026 год"
   },
-  sources: [ "[ADD SOURCE]", "[ADD SOURCE]", "[ADD SOURCE]" ], // books, archives, articles, audio, images
   qualities: ["АДАПТАЦИЯ","ВИДЕНИЕ","СМЕЛОСТЬ","ОТВЕТСТВЕННОСТЬ","СПОСОБНОСТЬ ОБЪЕДИНЯТЬ"]
 };
 
@@ -326,7 +325,6 @@ const Sound = {
 function build() {
   $("#aboutText").textContent = PROJECT.aboutText;
   $("#aboutMeta").innerHTML = Object.entries(PROJECT.meta).map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
-  $("#sourceList").innerHTML = PROJECT.sources.map(s => `<li>${esc(s)}</li>`).join("");
   $("#qualities").innerHTML = PROJECT.qualities.map(q => `<li>${esc(q)}</li>`).join("");
   $(".bigwave").innerHTML = Array.from({ length: 48 }, (_, i) => `<i style="animation-delay:${(i % 12) * .12}s"></i>`).join("");
 
