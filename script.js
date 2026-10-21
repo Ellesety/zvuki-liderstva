@@ -356,7 +356,7 @@ function build() {
       ${s.note ? `<p class="note reveal">${esc(s.note)}</p>` : ""}
       ${s.verse ? `<blockquote class="quote verse reveal">${esc(s.verse)}<br><small>${esc(s.verseSource || "")}</small></blockquote>` : ""}
       ${s.quote ? `<blockquote class="quote reveal">${esc(s.quote)}<br><small>${esc(s.quoteSource || "")}</small></blockquote>` : ""}
-      ${s.dilemma ? `<h3 class="reveal" style="font-weight:400;font-size:1.6rem;margin-top:48px">${esc(s.dilemma)}</h3><p class="reveal" style="color:var(--mut)">Что бы вы сделали?</p>` : ""}
+      ${s.dilemma ? `<h3 class="reveal" style="font-weight:400;font-size:1.6rem;margin-top:48px">${esc(s.dilemma)}</h3>` : ""}
       <div class="options"></div>
       <div class="result" aria-live="polite"></div>
     </div>`;
