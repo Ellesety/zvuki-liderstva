@@ -344,18 +344,18 @@ function build() {
     sec.innerHTML = `<div class="wrap">
       <span class="year">${esc(s.era)} · ${esc(s.year)}</span>
       <h2 class="reveal">${esc(s.leader)}</h2>
-      ${s.hook ? `<p class="hook reveal">${esc(s.hook)}</p>` : ""}
-      <div class="fig reveal"><span>${esc(s.imageAlt)}${s.imageSource ? `<br><a href="${esc(s.imageSource)}" target="_blank" rel="noopener noreferrer">Wikimedia Commons — фото Didier Descouens, CC BY-SA 4.0</a>` : ""}</span><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div>
-      ${s.context.split(/\n\n+/).map(p => `<p class="reveal">${esc(p)}</p>`).join("")}
-      ${s.note ? `<p class="note reveal">${esc(s.note)}</p>` : ""}
-      ${s.verse ? `<blockquote class="quote verse reveal">${esc(s.verse)}<br><small>${esc(s.verseSource || "")}</small></blockquote>` : ""}
-      ${s.quote ? `<blockquote class="quote reveal">${esc(s.quote)}<br><small>${esc(s.quoteSource || "")}</small></blockquote>` : ""}
       <button class="btn reveal listen">▶ СЛУШАТЬ ЭПОХУ</button>
       <div class="player" role="region" aria-label="Аудио: ${esc(s.leader)}">
         <strong>${esc(s.audioTitle)}</strong>
         <div class="status" aria-live="polite"></div>
         <button class="btn story-pause" type="button" disabled>⏸ ПАУЗА ЗВУКА ЭПОХИ</button>
       </div>
+      ${s.hook ? `<p class="hook reveal">${esc(s.hook)}</p>` : ""}
+      <div class="fig reveal"><span>${esc(s.imageAlt)}${s.imageSource ? `<br><a href="${esc(s.imageSource)}" target="_blank" rel="noopener noreferrer">Wikimedia Commons — фото Didier Descouens, CC BY-SA 4.0</a>` : ""}</span><img src="${esc(s.image)}" alt="${esc(s.imageAlt)}" loading="lazy"></div>
+      ${s.context.split(/\n\n+/).map(p => `<p class="reveal">${esc(p)}</p>`).join("")}
+      ${s.note ? `<p class="note reveal">${esc(s.note)}</p>` : ""}
+      ${s.verse ? `<blockquote class="quote verse reveal">${esc(s.verse)}<br><small>${esc(s.verseSource || "")}</small></blockquote>` : ""}
+      ${s.quote ? `<blockquote class="quote reveal">${esc(s.quote)}<br><small>${esc(s.quoteSource || "")}</small></blockquote>` : ""}
       ${s.dilemma ? `<h3 class="reveal" style="font-weight:400;font-size:1.6rem;margin-top:48px">${esc(s.dilemma)}</h3><p class="reveal" style="color:var(--mut)">Что бы вы сделали?</p>` : ""}
       <div class="options"></div>
       <div class="result" aria-live="polite"></div>
