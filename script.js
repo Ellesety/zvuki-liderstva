@@ -150,7 +150,7 @@ const STORIES = [
     options: [],
     quality: "",
     qualityText: "",
-    quote: "Ам Исраэль Хай» (Народ Израиля жив)",
+    quote: "«Ам Исраэль Хай» (Народ Израиля жив)",
     quoteSource: ""
   }
 ];
